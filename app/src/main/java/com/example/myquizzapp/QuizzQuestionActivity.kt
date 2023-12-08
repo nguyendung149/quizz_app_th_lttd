@@ -5,15 +5,16 @@ import android.graphics.Color
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
-import android.view.View.OnClickListener
 import android.widget.Button
-import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 
 class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
@@ -35,6 +36,30 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
     private var tvOptionThree: TextView? = null
     private var tvOptionFour: TextView? = null
     private var btnSubmit: Button? = null
+    private var btnViewRank: Button? = null
+
+    private var imgButtonHelp1: ImageButton? = null
+    private var imgButtonHelp2: ImageButton? = null
+    private var imgButtonHelp3: ImageButton? = null
+    private var helpUsedCount1: Int = 0
+    private val maxHelpCount1: Int = 2 // Số lần trợ giúp tối đa cho phép
+    private var helpUsedCount2: Int = 0
+    private val maxHelpCount2: Int = 2
+    private var helpUsedCount3: Int = 0
+    private val maxHelpCount3: Int = 2
+    private var textCount1: TextView? = null
+    private var textCount2: TextView? = null
+    private var textCount3: TextView? = null
+    private var hiddenIncorrectAnswer: Int = 0
+
+    private var count: TextView? = null
+
+    private var questionTimer: CountDownTimer? = null
+    private val questionTimeInMillis: Long = 2000 // Replace 10000 with the desired time in milliseconds
+    private var isAnswered: Boolean = false
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +67,8 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
 
 
         mUserName = intent.getStringExtra(Constants.USER_NAME)
+
+        count = findViewById(R.id.countTime)
 
         progressBar = findViewById(R.id.progressBar)
         tvProgressBar = findViewById(R.id.tv_progress)
@@ -54,15 +81,77 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
         tvOptionFour = findViewById(R.id.tv_option_four)
         btnSubmit = findViewById(R.id.btn_submit)
 
+
+
+        imgButtonHelp1 = findViewById(R.id.optionHelp1)
+        imgButtonHelp2 = findViewById(R.id.optionHelp2)
+        imgButtonHelp3 = findViewById(R.id.optionHelp3)
+
+        textCount1 = findViewById(R.id.count1)
+        textCount2 = findViewById(R.id.count2)
+        textCount3 = findViewById(R.id.count3)
+
+
+
+
         tvOptionOne?.setOnClickListener(this)
         tvOptionTwo?.setOnClickListener(this)
         tvOptionThree?.setOnClickListener(this)
         tvOptionFour?.setOnClickListener(this)
         btnSubmit?.setOnClickListener(this)
 
-        mQuestionList = Constants.getQuestions()
 
+        textCount1?.text = maxHelpCount1.toString()
+        textCount2?.text = maxHelpCount2.toString()
+        textCount3?.text = maxHelpCount3.toString()
+
+        imgButtonHelp1?.setOnClickListener {
+            if (helpUsedCount1 < maxHelpCount1) {
+                showCorrectAnswer()
+                helpUsedCount1++ // Nếu đã sử dụng hết lượt trợ giúp, có thể hiển thị thông báo tại đây
+                updateHelpCountText1(maxHelpCount1, textCount1!!)
+            } else {
+                // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
+                Toast.makeText(applicationContext, "Bạn đã sử dụng hết lượt trợ giúp", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        imgButtonHelp2?.setOnClickListener {
+            if (helpUsedCount2 < maxHelpCount2) {
+                // Ẩn một đáp án sai
+                hiddenIncorrectAnswer = hideOneIncorrectAnswer()
+
+
+                helpUsedCount2++
+                updateHelpCountText2(maxHelpCount2, textCount2!!)
+            } else {
+                // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
+                Toast.makeText(applicationContext, "Bạn đã sử dụng hết lượt trợ giúp", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        imgButtonHelp3?.setOnClickListener {
+            if (helpUsedCount3 < maxHelpCount3) {
+                // Kiểm tra xem câu hỏi có thông tin bổ sung không
+                val currentQuestion: Question = mQuestionList!![mCurrentPosition - 1]
+                if (!currentQuestion.additionalInfo.isNullOrBlank()) {
+                    // Hiển thị thông tin câu hỏi
+                    showQuestionInfo()
+                    helpUsedCount3++
+                    updateHelpCountText3(maxHelpCount3, textCount3!!)
+                } else {
+                    // Hiển thị thông báo khi không có thông tin bổ sung
+                    Toast.makeText(applicationContext, "Câu hỏi này không có thông tin bổ sung", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
+                Toast.makeText(applicationContext, "Bạn đã sử dụng hết lượt trợ giúp", Toast.LENGTH_SHORT).show()
+            }
+        }
+        mQuestionList = Constants.getQuestions()
         setQuestion()
+
+
 
 
        }
@@ -71,6 +160,7 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
 
     private fun setQuestion() {
         defaultOptionView()
+        restoreAnswerOptions()
         val question: Question = mQuestionList!![mCurrentPosition - 1]
 
         progressBar?.progress = mCurrentPosition
@@ -83,11 +173,12 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
         tvOptionFour?.text = question.optionFour
 
 
-        if (mCurrentPosition==mQuestionList!!.size){
+        if (mCurrentPosition == mQuestionList!!.size) {
             btnSubmit?.text = "FINISH"
-        }else{
+        } else {
             btnSubmit?.text = "SUBMIT"
         }
+        startQuestionTimer()
     }
     private fun defaultOptionView(){
         val options = ArrayList<TextView>()
@@ -152,6 +243,7 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
                 //TODO: "implement btn submit"
                 if (mSelectedOptionPosition==0){
                     mCurrentPosition++
+
                     when{
                         mCurrentPosition <= mQuestionList!!.size ->
                         {
@@ -182,9 +274,8 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
                         btnSubmit?.text = "GO TO NEXT QUESTION"
                     }
                     mSelectedOptionPosition = 0
+
                 }
-
-
             }
         }
     }
@@ -216,4 +307,118 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
             }
         }
     }
+    private fun showCorrectAnswer() {
+        val currentQuestion: Question = mQuestionList!![mCurrentPosition - 1]
+
+        // Hiển thị câu trả lời đúng
+        answerView(currentQuestion.correctAnswer, R.drawable.correct_option_border_bg)
+    }
+
+    private fun updateHelpCountText1(maxHelpCount1: Int, textView: TextView) {
+        val remainingHelps = maxHelpCount1 - helpUsedCount1
+        textView.text = "$remainingHelps"
+    }
+    private fun updateHelpCountText2(maxHelpCount2: Int, textView: TextView) {
+        val remainingHelps = maxHelpCount2 - helpUsedCount2
+        textView.text = "$remainingHelps"
+    }
+    private fun updateHelpCountText3(maxHelpCount3: Int, textView: TextView) {
+        val remainingHelps = maxHelpCount3 - helpUsedCount3
+        textView.text = "$remainingHelps"
+    }
+
+
+    private fun hideOneIncorrectAnswer(): Int {
+        val currentQuestion: Question = mQuestionList!![mCurrentPosition - 1]
+        val correctAnswer = currentQuestion.correctAnswer
+
+        // Chọn ngẫu nhiên một đáp án sai
+        var incorrectAnswer: Int
+        do {
+            incorrectAnswer = (1..4).random()
+        } while (incorrectAnswer == correctAnswer)
+
+        // Ẩn đáp án sai
+        hideIncorrectAnswer(incorrectAnswer)
+
+        return incorrectAnswer
+    }
+
+    private fun hideIncorrectAnswer(answerNumber: Int) {
+        when (answerNumber) {
+            1 -> tvOptionOne?.visibility = View.GONE
+            2 -> tvOptionTwo?.visibility = View.GONE
+            3 -> tvOptionThree?.visibility = View.GONE
+            4 -> tvOptionFour?.visibility = View.GONE
+        }
+    }
+    // Hàm khôi phục tất cả các đáp án
+    private fun restoreAnswerOptions() {
+        tvOptionOne?.visibility = View.VISIBLE
+        tvOptionTwo?.visibility = View.VISIBLE
+        tvOptionThree?.visibility = View.VISIBLE
+        tvOptionFour?.visibility = View.VISIBLE
+    }
+    private fun showQuestionInfo() {
+        val currentQuestion: Question = mQuestionList!![mCurrentPosition - 1]
+        val infoMessage = """
+        |${currentQuestion.additionalInfo}
+        |""".trimMargin()
+
+        // Log để kiểm tra giá trị của infoMessage
+        Log.d("InfoMessage", infoMessage)
+
+        // Hiển thị thông tin trong AlertDialog
+        val alertDialogBuilder = AlertDialog.Builder(this)
+        alertDialogBuilder.setTitle("Thông tin câu hỏi")
+        alertDialogBuilder.setMessage(infoMessage)
+        alertDialogBuilder.setPositiveButton("Đóng", null)
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+    private fun startQuestionTimer() {
+        questionTimer?.cancel() // Hủy bỏ đếm ngược trước đó (nếu có)
+        questionTimer = object : CountDownTimer(questionTimeInMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsRemaining = millisUntilFinished / 1000
+                count?.text = "Thời gian còn lại: $secondsRemaining giây"
+            }
+
+            override fun onFinish() {
+                // Thời gian đếm ngược kết thúc, xử lý tùy thuộc vào logic của bạn
+                submitQuestion()
+            }
+        }.start()
+    }
+    private fun submitQuestion() {
+        mCurrentPosition++
+        mSelectedOptionPosition = 0 // Reset the selected option position
+        isAnswered = false // Reset the isAnswered flag
+
+        when {
+            mCurrentPosition <= mQuestionList!!.size -> {
+                setQuestion()
+                restartQuestionTimer() // Restart the countdown timer
+            }
+            else -> {
+                // If no more questions, move to the ResultActivity
+                stopQuestionTimer() // Stop the countdown timer
+                val intent: Intent = Intent(this@QuizzQuestionActivity, ResultActivity::class.java)
+                intent.putExtra(Constants.USER_NAME, mUserName)
+                intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList?.size)
+                intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswer)
+                startActivity(intent)
+                finish()
+            }
+        }
+    }
+    private fun restartQuestionTimer() {
+        questionTimer?.cancel() // Hủy bỏ đồng hồ đếm ngược trước đó (nếu có)
+        startQuestionTimer()
+    }
+    private fun stopQuestionTimer() {
+        questionTimer?.cancel()
+    }
+
 }

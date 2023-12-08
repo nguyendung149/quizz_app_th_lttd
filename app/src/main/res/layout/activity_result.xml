@@ -52,6 +52,7 @@
         android:textColor="@android:color/secondary_text_dark"
         android:textSize="20sp"
         tools:text="Your Score is 9 out of 10"/>
+
     <Button
         android:id="@+id/btn_finish"
         android:layout_width="match_parent"
@@ -59,6 +60,17 @@
         android:layout_marginTop="10dp"
         android:backgroundTint="@android:color/white"
         android:text="FINISH"
-        android:textColor="@color/design_default_color_primary"
-        android:textSize="18sp"/>
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/btn_viewRank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:text="View Rank"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:onClick="openRoundRankActivity"/>
+
 </LinearLayout>
