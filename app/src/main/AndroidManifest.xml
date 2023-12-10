@@ -16,6 +16,10 @@
             android:name=".ResultActivity"
             android:exported="false" />
         <activity
+            android:name=".LeaderboardActivity"
+            android:parentActivityName=".ResultActivity"
+            android:exported="false"/>
+        <activity
             android:name=".QuizzQuestionActivity"
             android:exported="false" />
         <activity

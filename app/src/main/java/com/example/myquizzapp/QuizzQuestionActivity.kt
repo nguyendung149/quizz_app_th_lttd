@@ -55,7 +55,7 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
     private var count: TextView? = null
 
     private var questionTimer: CountDownTimer? = null
-    private val questionTimeInMillis: Long = 2000 // Replace 10000 with the desired time in milliseconds
+    private val questionTimeInMillis: Long = 5000 // Replace 10000 with the desired time in milliseconds
     private var isAnswered: Boolean = false
 
 
