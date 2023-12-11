@@ -14,6 +14,7 @@ class FileHelper {
         fun writeData(context: Context,name: String,score:Int){
             var fos = context.openFileOutput(FILENAME,Context.MODE_APPEND)
             var writer = BufferedWriter(OutputStreamWriter(fos))
+            writer.write("\n")
             writer.write("${name},${score}\n")
             writer.close()
 

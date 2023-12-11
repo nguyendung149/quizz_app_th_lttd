@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".QuizzQuestionActivity">
+    tools:context=".QuizzQuestionActivity"
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"

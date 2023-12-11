@@ -1,19 +1,20 @@
 package com.example.myquizzapp
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.BufferedWriter
 import java.io.File
-import java.io.ObjectOutputStream
+import java.io.OutputStreamWriter
 
 class RankActivity : AppCompatActivity() {
+    lateinit var btnPlayAgain:Button
     private lateinit var adapter: RankAdapter
     private lateinit var tvStatus:TextView
     private lateinit var rcView:RecyclerView
@@ -31,11 +32,15 @@ class RankActivity : AppCompatActivity() {
 
 
         var rankList = fileHelper.readData(this)
+        rankList.sortByDescending {
+            it.trim().split(",")[1]
+        }
         Toast.makeText(this,rankList[0],Toast.LENGTH_LONG).show()
         for(i in 0..<rankList.size){
             rankList[i] = rankList.get(i).trim().trim('\n')
         }
 
+        btnPlayAgain = findViewById(R.id.btnPlayAgain)
         rcView = findViewById(R.id.rvItemList)
         tvStatus = findViewById(R.id.tvNoRecordsAvailable)
         btnClear = findViewById(R.id.btnClearRank)
@@ -45,7 +50,17 @@ class RankActivity : AppCompatActivity() {
         rcView.adapter = adapter
 
         btnClear.setOnClickListener {
-            Toast.makeText(this,"${rankList.size} sizes",Toast.LENGTH_LONG).show()
+            val file = this.openFileOutput("ranking.txt",Context.MODE_PRIVATE)
+            var writer = BufferedWriter(OutputStreamWriter(file))
+            writer.write("")
+            rcView.layoutManager = LinearLayoutManager(this)
+            adapter = RankAdapter(fileHelper.readData(this),this)
+            rcView.adapter = adapter
+
+        }
+        btnPlayAgain.setOnClickListener {
+            var intent:Intent = Intent(this@RankActivity,MainActivity::class.java)
+            startActivity(intent)
         }
 
     }

@@ -20,7 +20,7 @@ class RankAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RankViewHolder {
-        val view:View = LayoutInflater.from(context).inflate(R.layout.item_rows,parent,false)
+        val view:View = LayoutInflater.from(parent.context).inflate(R.layout.item_rows,parent,false)
         return RankViewHolder(view)
     }
 
