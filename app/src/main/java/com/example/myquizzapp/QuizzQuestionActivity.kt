@@ -55,7 +55,7 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
     private var count: TextView? = null
 
     private var questionTimer: CountDownTimer? = null
-    private val questionTimeInMillis: Long = 5000 // Replace 10000 with the desired time in milliseconds
+    private val questionTimeInMillis: Long = 10000 // Replace 10000 with the desired time in milliseconds
     private var isAnswered: Boolean = false
 
 
@@ -268,6 +268,7 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
                         mCorrectAnswer++
                     }
                     answerView(question.correctAnswer,R.drawable.correct_option_border_bg)
+                    stopQuestionTimer()
                     if (mCurrentPosition == mQuestionList!!.size){
                         btnSubmit?.text = "FINISH"
                     }else {
@@ -404,21 +405,31 @@ class QuizzQuestionActivity : AppCompatActivity(),View.OnClickListener {
             else -> {
                 // If no more questions, move to the ResultActivity
                 stopQuestionTimer() // Stop the countdown timer
-                val intent: Intent = Intent(this@QuizzQuestionActivity, ResultActivity::class.java)
-                intent.putExtra(Constants.USER_NAME, mUserName)
-                intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList?.size)
-                intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswer)
-                startActivity(intent)
-                finish()
+//                mCurrentPosition = 1
+//                val intent: Intent = Intent(this@QuizzQuestionActivity, ResultActivity::class.java)
+//                intent.putExtra(Constants.USER_NAME, mUserName)
+//                intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList?.size)
+//                intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswer)
+//                startActivity(intent)
+//                finish()
+
             }
         }
     }
     private fun restartQuestionTimer() {
-        questionTimer?.cancel() // Hủy bỏ đồng hồ đếm ngược trước đó (nếu có)
+        if(questionTimer!=null){
+            questionTimer?.cancel()
+        } // Hủy bỏ đồng hồ đếm ngược trước đó (nếu có)
+        questionTimer=null
         startQuestionTimer()
     }
     private fun stopQuestionTimer() {
-        questionTimer?.cancel()
+        if(questionTimer!=null){
+            questionTimer?.cancel()
+
     }
+        questionTimer = null
+    }
+
 
 }

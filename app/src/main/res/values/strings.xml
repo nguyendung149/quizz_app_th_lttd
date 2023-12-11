@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyQuizzApp</string>
+    <string name="rankTable">BẢNG XẾP HẠNG</string>
 </resources>
