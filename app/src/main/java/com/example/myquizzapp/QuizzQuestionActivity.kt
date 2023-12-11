@@ -36,7 +36,6 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
     private var tvOptionThree: TextView? = null
     private var tvOptionFour: TextView? = null
     private var btnSubmit: Button? = null
-    private var btnViewRank: Button? = null
 
     private var imgButtonHelp1: ImageButton? = null
     private var imgButtonHelp2: ImageButton? = null
