@@ -16,13 +16,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import kotlin.random.Random
 
 class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
 
     private var mCurrentPosition: Int = 1
     private var mQuestionList: ArrayList<Question>? = null
     private var mSelectedOptionPosition: Int = 0
-
+    private var numberOfQuestion = 10
     private var mUserName: String? = null
     private var mCorrectAnswer: Int = 0
 
@@ -54,10 +55,10 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
     private var count: TextView? = null
 
     private var questionTimer: CountDownTimer? = null
-    private val questionTimeInMillis: Long =
-        10000 // Replace 10000 with the desired time in milliseconds
+    private val questionTimeInMillis: Long = 10000 // Replace 10000 with the desired time in milliseconds
     private var isAnswered: Boolean = false
     private var flag_option = 1
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,68 +106,74 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
         textCount3?.text = maxHelpCount3.toString()
 
         imgButtonHelp1?.setOnClickListener {
-            if (helpUsedCount1 < maxHelpCount1) {
-                showCorrectAnswer()
-                helpUsedCount1++ // Nếu đã sử dụng hết lượt trợ giúp, có thể hiển thị thông báo tại đây
-                updateHelpCountText1(maxHelpCount1, textCount1!!)
-            } else {
-                // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
-                Toast.makeText(
-                    applicationContext,
-                    "Bạn đã sử dụng hết lượt trợ giúp",
-                    Toast.LENGTH_SHORT
-                ).show()
+            if (flag_option > 0) {
+                if (helpUsedCount1 < maxHelpCount1) {
+                    showCorrectAnswer()
+                    helpUsedCount1++ // Nếu đã sử dụng hết lượt trợ giúp, có thể hiển thị thông báo tại đây
+                    updateHelpCountText1(maxHelpCount1, textCount1!!)
+                } else {
+                    // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
+                    Toast.makeText(
+                        applicationContext,
+                        "Bạn đã sử dụng hết lượt trợ giúp",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
 
         imgButtonHelp2?.setOnClickListener {
-            if (helpUsedCount2 < maxHelpCount2) {
-                // Ẩn một đáp án sai
-                hiddenIncorrectAnswer = hideOneIncorrectAnswer()
+            if (flag_option > 0) {
+                if (helpUsedCount2 < maxHelpCount2) {
+                    // Ẩn một đáp án sai
+                    hiddenIncorrectAnswer = hideOneIncorrectAnswer()
 
 
-                helpUsedCount2++
-                updateHelpCountText2(maxHelpCount2, textCount2!!)
-            } else {
-                // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
-                Toast.makeText(
-                    applicationContext,
-                    "Bạn đã sử dụng hết lượt trợ giúp",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-        imgButtonHelp3?.setOnClickListener {
-            if (helpUsedCount3 < maxHelpCount3) {
-                // Kiểm tra xem câu hỏi có thông tin bổ sung không
-                val currentQuestion: Question = mQuestionList!![mCurrentPosition - 1]
-                if (!currentQuestion.additionalInfo.isNullOrBlank()) {
-                    // Hiển thị thông tin câu hỏi
-                    showQuestionInfo()
-                    helpUsedCount3++
-                    updateHelpCountText3(maxHelpCount3, textCount3!!)
+                    helpUsedCount2++
+                    updateHelpCountText2(maxHelpCount2, textCount2!!)
                 } else {
-                    // Hiển thị thông báo khi không có thông tin bổ sung
+                    // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
                     Toast.makeText(
                         applicationContext,
-                        "Câu hỏi này không có thông tin bổ sung",
+                        "Bạn đã sử dụng hết lượt trợ giúp",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            } else {
-                // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
-                Toast.makeText(
-                    applicationContext,
-                    "Bạn đã sử dụng hết lượt trợ giúp",
-                    Toast.LENGTH_SHORT
-                ).show()
-
             }
         }
+        imgButtonHelp3?.setOnClickListener {
+            if (flag_option > 0) {
+                if (helpUsedCount3 < maxHelpCount3) {
+                    // Kiểm tra xem câu hỏi có thông tin bổ sung không
+                    val currentQuestion: Question = mQuestionList!![mCurrentPosition - 1]
+                    if (!currentQuestion.additionalInfo.isNullOrBlank()) {
+                        // Hiển thị thông tin câu hỏi
+                        showQuestionInfo()
+                        helpUsedCount3++
+                        updateHelpCountText3(maxHelpCount3, textCount3!!)
+                    } else {
+                        // Hiển thị thông báo khi không có thông tin bổ sung
+                        Toast.makeText(
+                            applicationContext,
+                            "Câu hỏi này không có thông tin bổ sung",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    // Hiển thị thông báo khi đã sử dụng hết lượt trợ giúp
+                    Toast.makeText(
+                        applicationContext,
+                        "Bạn đã sử dụng hết lượt trợ giúp",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+            }
+        }
+        var randomQuestion: ArrayList<Int> = ArrayList<Int>(listOf())
         mQuestionList = Constants.getQuestions()
+        mQuestionList = randomQuestion()
         setQuestion()
-
-
     }
 
 
@@ -389,10 +396,10 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun hideIncorrectAnswer(answerNumber: Int) {
         when (answerNumber) {
-            1 -> tvOptionOne?.visibility = View.GONE
-            2 -> tvOptionTwo?.visibility = View.GONE
-            3 -> tvOptionThree?.visibility = View.GONE
-            4 -> tvOptionFour?.visibility = View.GONE
+            1 -> tvOptionOne?.visibility = View.INVISIBLE
+            2 -> tvOptionTwo?.visibility = View.INVISIBLE
+            3 -> tvOptionThree?.visibility = View.INVISIBLE
+            4 -> tvOptionFour?.visibility = View.INVISIBLE
         }
     }
 
@@ -481,4 +488,17 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
     }
 
 
+    private fun randomQuestion():ArrayList<Question>{
+        var questions:ArrayList<Question> = ArrayList<Question>()
+        var randomIndex:HashSet<Int> = HashSet<Int>()
+        while (randomIndex.size<10) {
+            var randomInt = Random.nextInt(0, mQuestionList!!.size - 1)
+            randomIndex.add(randomInt)
+        }
+
+        for (index in randomIndex){
+            questions.add(mQuestionList!!.get(index))
+        }
+        return questions
+    }
 }
