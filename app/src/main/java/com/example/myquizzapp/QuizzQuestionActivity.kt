@@ -3,9 +3,11 @@ package com.example.myquizzapp
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -58,6 +60,13 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
     private val questionTimeInMillis: Long = 10000 // Replace 10000 with the desired time in milliseconds
     private var isAnswered: Boolean = false
     private var flag_option = 1
+
+    private lateinit var musicThread: Thread
+    private var isMusicPlaying = false
+    private var isResultLayout: Boolean = false
+    private var mediaPlayer: MediaPlayer? = null
+
+
 
 
 
@@ -174,6 +183,14 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
         mQuestionList = Constants.getQuestions()
         mQuestionList = randomQuestion()
         setQuestion()
+        startMusic()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (!isResultLayout) {
+            stopMusic()
+        }
     }
 
 
@@ -457,18 +474,10 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             else -> {
-                // If no more questions, move to the ResultActivity
                 stopQuestionTimer() // Stop the countdown timer
-//                mCurrentPosition = 1
-//                val intent: Intent = Intent(this@QuizzQuestionActivity, ResultActivity::class.java)
-//                intent.putExtra(Constants.USER_NAME, mUserName)
-//                intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList?.size)
-//                intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswer)
-//                startActivity(intent)
-//                finish()
-
             }
         }
+
     }
 
     private fun restartQuestionTimer() {
@@ -501,4 +510,44 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
         }
         return questions
     }
+
+    private fun playBackgroundMusic() {
+        val soundResourceId = R.raw.nhaccauhoi
+
+        if (soundResourceId != 0) {
+            mediaPlayer = MediaPlayer.create(this@QuizzQuestionActivity, soundResourceId)
+
+            mediaPlayer?.setOnCompletionListener {
+                // Reset the media player and play again
+                mediaPlayer?.reset()
+                playBackgroundMusic()
+            }
+
+            mediaPlayer?.start()
+            mediaPlayer?.setVolume(1.0f, 1.0f)
+        }
+    }
+
+    private fun startMusic() {
+        playBackgroundMusic()
+    }
+
+    private fun stopMusic() {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopMusic()
+    }
+
+
+
+
+
+
+
+
 }
