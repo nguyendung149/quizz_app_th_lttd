@@ -89,8 +89,38 @@
         </LinearLayout>
 
 
-
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/textNameGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="NHÓM 5B"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="100dp"/>
+
+    <TextView
+        android:id="@+id/textNameNum1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="20200121 - Nguyễn Dũng"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textNameNum2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="20200336 - Nguyễn Phan Thanh Tấn"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
 
 </LinearLayout>
