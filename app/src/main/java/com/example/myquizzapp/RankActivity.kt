@@ -3,6 +3,7 @@ package com.example.myquizzapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +16,7 @@ import java.io.OutputStreamWriter
 
 class RankActivity : AppCompatActivity() {
     lateinit var btnPlayAgain:Button
+    private lateinit var tvNoAvalable:TextView
     private lateinit var adapter: RankAdapter
     private lateinit var tvStatus:TextView
     private lateinit var rcView:RecyclerView
@@ -39,7 +41,7 @@ class RankActivity : AppCompatActivity() {
         for(i in 0..<rankList.size){
             rankList[i] = rankList.get(i).trim().trim('\n')
         }
-
+        tvNoAvalable = findViewById(R.id.tvNoRecordsAvailable)
         btnPlayAgain = findViewById(R.id.btnPlayAgain)
         rcView = findViewById(R.id.rvItemList)
         tvStatus = findViewById(R.id.tvNoRecordsAvailable)
@@ -49,6 +51,7 @@ class RankActivity : AppCompatActivity() {
         adapter = RankAdapter(rankList,this)
         rcView.adapter = adapter
 
+        tvNoAvalable.visibility = View.GONE
         btnClear.setOnClickListener {
             val file = this.openFileOutput("ranking.txt",Context.MODE_PRIVATE)
             var writer = BufferedWriter(OutputStreamWriter(file))
@@ -56,6 +59,8 @@ class RankActivity : AppCompatActivity() {
             rcView.layoutManager = LinearLayoutManager(this)
             adapter = RankAdapter(fileHelper.readData(this),this)
             rcView.adapter = adapter
+            tvNoAvalable.visibility = View.VISIBLE
+
 
         }
         btnPlayAgain.setOnClickListener {
