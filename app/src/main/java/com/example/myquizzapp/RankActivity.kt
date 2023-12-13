@@ -37,7 +37,7 @@ class RankActivity : AppCompatActivity() {
         rankList.sortByDescending {
             it.trim().split(",")[1]
         }
-        Toast.makeText(this,rankList[0],Toast.LENGTH_LONG).show()
+
         for(i in 0..<rankList.size){
             rankList[i] = rankList.get(i).trim().trim('\n')
         }

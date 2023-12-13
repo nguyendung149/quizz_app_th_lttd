@@ -57,7 +57,7 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
     private var count: TextView? = null
 
     private var questionTimer: CountDownTimer? = null
-    private val questionTimeInMillis: Long = 10000 // Replace 10000 with the desired time in milliseconds
+    private val questionTimeInMillis: Long = 15000 // Replace 10000 with the desired time in milliseconds
     private var isAnswered: Boolean = false
     private var flag_option = 1
 
@@ -463,12 +463,14 @@ class QuizzQuestionActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun submitQuestion() {
+        flag_option = 1
         mCurrentPosition++
         mSelectedOptionPosition = 0 // Reset the selected option position
         isAnswered = false // Reset the isAnswered flag
 
         when {
             mCurrentPosition <= mQuestionList!!.size -> {
+
                 setQuestion()
                 restartQuestionTimer() // Restart the countdown timer
             }
