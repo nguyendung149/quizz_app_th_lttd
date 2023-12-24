@@ -8,7 +8,7 @@
     tools:context=".QuizzQuestionActivity"
     android:padding="20dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -16,8 +16,12 @@
         android:padding="16dp">
 
         <LinearLayout
+            android:id="@+id/ly_displayTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:orientation="horizontal">
 
             <TextView
@@ -38,6 +42,9 @@
             android:gravity="center"
             android:textSize="22sp"
             android:textColor="#363A43"
+            app:layout_constraintTop_toBottomOf="@+id/ly_displayTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:text="What country does this flag belong to?"
             />
         <ImageView
@@ -46,12 +53,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:contentDescription="Quizz Question Image"
+            app:layout_constraintTop_toBottomOf="@+id/tv_question"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:src="@drawable/ic_flag_of_germany"
             />
         <LinearLayout
+            android:id="@+id/ly_displayProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@+id/tv_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
            >
@@ -85,6 +99,9 @@
             android:textColor="#7A8098"
             android:textSize="18sp"
             tools:text="Apple"
+            app:layout_constraintTop_toBottomOf="@+id/ly_displayProgress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/default_option_border_bg"
             />
         <TextView
@@ -97,6 +114,9 @@
             android:textColor="#7A8098"
             android:textSize="18sp"
             tools:text="Apple"
+            app:layout_constraintTop_toBottomOf="@+id/tv_option_one"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/default_option_border_bg"
             />
         <TextView
@@ -109,6 +129,9 @@
             android:textColor="#7A8098"
             android:textSize="18sp"
             tools:text="Apple"
+            app:layout_constraintTop_toBottomOf="@+id/tv_option_two"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/default_option_border_bg"
             />
         <TextView
@@ -122,6 +145,9 @@
             android:textSize="18sp"
             tools:text="Apple"
             android:background="@drawable/default_option_border_bg"
+            app:layout_constraintTop_toBottomOf="@+id/tv_option_three"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             />
 
         <Button
@@ -134,13 +160,21 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@+id/tv_option_four"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
 
             />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:id="@+id/ly_displaySupport"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/btn_submit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -213,6 +247,6 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
